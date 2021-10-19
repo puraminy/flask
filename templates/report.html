@@ -1,0 +1,41 @@
+<div class="text-end my-1 clearfix">
+  {% include "title.html" %}
+  <input id="tag_dfname" name="tag_dfname" type="hidden" value="{{ tag }}={{ dfname}}" />
+  <div class="float-end">
+    <button id="setbase" type="button" class="btn btn-primary loading" cmd="set_baseline">
+      Baseline 
+    </button>
+    <button id="compare" type="button" class="btn btn-primary loading" cmd="compare">
+      Compare 
+    </button>
+    <button id="reload_report" type="button" class="btn btn-primary loading" cmd="reload_report">
+      Reload
+    </button>
+    <button type="button" class="btn mr-1 btn-primary" cmd="close_report">
+      Browse  
+    </button>
+    <button class="btn btn-primary" cmd-target="{{ tag }}" cmd="slide" >
+      <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+<div class="collapse show dfrow" id="{{ tag }}" >
+  {% for table in tables %}
+  {{ table|safe }}
+  {% endfor %}
+  <div class="container my-1">
+    {% for metric in metrics %}
+    <button class="loading btn btn-primary" cmd="{{ metric }}" label="Recompute">{{ metric.title() }}</button>
+    {% endfor %}
+    <span id="msg" class="error px-2"> </span>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class=flashes>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<table class="table">
+  {% for key, l in dflist.items() %}
+  <tr>
+    <td>
+      <a class="dfentry" tag="{{ key  }}" path="{{ l }}"  href="#">{{ key }}</a>
+    </td>
+    <td>
+      <button type="button" class="btn btn-entry">Remove Entry</button>
+    </td>
+  </tr>
+  {% endfor %}
+</table>

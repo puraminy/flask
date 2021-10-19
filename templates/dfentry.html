@@ -1,0 +1,16 @@
+<div class="clearfix" >
+  <div class="float-start">
+     <span class="tag_span no_selection">{{ tag }}</span>
+     <input class="tag_name" name="tag_name" type="hidden" value="" />
+  </div>
+  <input id="tag_dfname" name="tag_dfname" type="hidden" value="" />
+  <div class="float-end">
+    <!-- button id="report" type="button" tag="{{ tag  }}" path="{{ path }}" class="loading btn df-link btn-primary" cmd="show report">
+      Show Report
+    </button -->
+    <button type="button" tag="{{ tag  }}" path="{{ path }}" class="btn df-link btn-primary" cmd="browse">Browse</button>
+    <button type="button" tag="{{ tag  }}" path="{{ path }}" class="btn df-link btn-primary" cmd="rename">Rename</button>
+    <button type="button" tag="{{ tag  }}" path="{{ path }}" class="btn df-link btn-primary" cmd="remove">Remove</button>
+    <button type="button" tag="{{ tag  }}" path="{{ path }}" class="btn df-link mx-2" cmd="make_hidden">Hide</button>
+  </div>
+</div>

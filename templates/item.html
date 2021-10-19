@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block title %}
+Persian Atomic
+{% endblock %}
+{% block content %}
+<div class="container dflist"> 
+  {% for tag, path in dflist.items() %}
+		<form class="dfform" method="post" action="/" >
+			<input name="cmd" type="hidden" value="" />
+			<div class="container mt-2 justify-content-center">
+				{% if path in items.items() %}   
+					{% set item = items[path] %}
+					<div class="dfitem" index="{{loop.index}}" id="{{tag}}">
+					{% include "row.html" %}
+					</div>
+				{% else %}
+					<div class="dfitem" index="{{loop.index}}" id="{{tag}}">
+						{% include "dfentry.html" %}
+					</div>
+				{% endif %}
+			</div>
+		</form>
+	{% endfor %}
+	<div class="container my-3">
+			<a id="reload" cmd="reload" href="/" class="btn btn-primary">Reload</a>
+	</div>
+</div>
+{% endblock %}
+{% block footer %}
+<div class="container" >
+	<span class="text-muted"> Tehran NLP Lab: Persian Atomic </span>
+</div>
+{% endblock %}
+{% block scripts %}
+  {{ super() }}
+<!-- ssss -->
+<script>
+	$(function () {
+		  $('#refresh').click(function() {
+					location.reload();
+			});
+			$(document).on("click", "#reload", function(event) {
+					event.preventDefault()
+					$.post(
+							  "/",
+							  { cmd: "reload" },
+							  function(data) {
+									 location.reload();
+								}
+					);
+			});
+			$(document).on("dblclick", ".tag_span", function(e) {
+						let dfitem = $(this).closest('.dfitem')
+					  e.preventDefault();
+						tagname = dfitem.find(".tag_name")
+						if (tagname.attr("type") == "hidden") {
+								$(this).hide()
+								tagname.attr("type", "text")
+								tagname.val($(this).text())
+								tagname.focus()
+								return
+						}
+			});
+			$(document).on('keypress', ".tag_name", function(e) {
+			    if(e.which == 13) {
+							e.preventDefault()
+							let form = $(this).closest('form')
+							let dfitem = $(this).closest('.dfitem')
+							$.post(
+										"/",
+										{ cmd: "rename", 
+											orig_tag: form.find(".tag_span").text(), 
+											tag_name: $(this).val() },
+										function(data) {
+												if (data.indexOf("Error:") >= 0) {
+												  	alert(data);
+												} else {
+														dfitem.html(data);
+												}
+										}
+							);
+			    }
+			});
+			$(document).on("focusout", ".tag_name", function() {
+					$(this).attr("type", "hidden")
+					let dfitem = $(this).closest('.dfitem')
+					dfitem.find(".tag_span").show()
+			});
+			$(document).on("click", ".dfform .btn, .df-link, .page-link", function (event) {
+					var cmd = $(this).text()
+					var attr = $(this).attr('cmd');
+					let form = $(this).closest('form')
+					let dfitem = $(this).closest('.dfitem')
+					event.preventDefault();	
+					if (typeof attr !== 'undefined' && attr !== false) {
+							 cmd = attr 
+					}
+					if (cmd == "hide") {
+						  dfitem.hide()	
+							return
+					}
+					if (cmd == "rename") {
+							tagname = dfitem.find(".tag_name")
+							let tag_span = dfitem.find(".tag_span")
+							if (tagname.attr("type") == "hidden") {
+									tag_span.hide()
+									tagname.attr("type", "text")
+									tagname.val(tag_span.text())
+									tagname.focus()
+									return
+							}
+					}
+					if (cmd == "slide") {
+							icon = $(this).find("i")
+						  dfrow = dfitem.find(".dfrow")	
+							if (dfrow.hasClass("show")) {
+								icon.removeClass("fa-angle-double-up").addClass("fa-angle-double-down")
+							} else {
+								icon.removeClass("fa-angle-double-down").addClass("fa-angle-double-up")
+							}
+							dfrow.toggleClass("show")
+							return
+					}
+					if ($(this).is(".btn, .page-link, .df-link")) {
+							// disable button
+							$(".btn").prop("disabled", true);
+							// add spinner to button
+							active_btn = $(this)
+							btn_content = $(this).html()
+							$(this).html(
+								`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ` + $(this).text()
+							);
+					}
+					if ($(this).hasClass("df-link")) {
+							let entry = $(this)
+							var tag_dfname = entry.attr("tag") + "=" + entry.attr("path")
+							console.log(entry.text())
+							form.find("input[name=tag_dfname]").val(tag_dfname)
+					}
+					form.find("input[name=cmd]").val(cmd)
+					$.ajax({
+						url: '/',
+						data: form.serialize(),
+						type: 'POST',
+						success: function(data, textStatus, xhr){
+								        if (xhr.status == 202) {
+														$("#msg").html(data)
+												} if (xhr.status == 201) {
+														dfitem.find("#msg").html(data.message)
+														dfitem.find("#msg").removeClass("error").addClass("success")
+												} else if (cmd == "remove" || cmd == "make_hidden") {
+														dfitem.hide();
+												} else if (xhr.status == 203) {
+														dfitem.find("#chart_" + data).html("<img src='/plot.png?chart="+ data +"&" + new Date().getTime() + "' />")
+												} else {
+														// uuuuuu
+														if (data.hasOwnProperty("items")) {
+															$.each(data.items, function(key, value){
+																	$("#" + key).html(value);
+															});
+                            } else {
+															dfitem.html(data);
+                            }
+												}
+											},
+							error: function(data, textStatus, errorThrown) { 
+									      if (data.status == 521) {
+														dfitem.find("#msg").html(data.responseJSON.message)
+													  dfitem.find("#msg").removeClass("success").addClass("error")
+												} else if (cmd == "remove") {
+												} else {
+														dfitem.html("Error:" + data.responseText)
+												}
+												console.log(data)
+											},
+					  complete: function(response) {
+								$(".btn").prop("disabled", false);
+								$(".spinner-border").remove();
+								if (active_btn != 'undefined') {
+										active_btn.html(btn_content)
+								}
+					  }
+					});
+			});
+			$(document).on("click", ".dfform .dfentry", function () {
+					let form = $(this).closest('form')
+					entry = $(this)
+					form.find("input[name=cmd]").val("")
+					var tag_dfname = entry.attr("tag") + "=" + entry.attr("path")
+					form.find("input[name=tag_dfname]").val(tag_dfname)
+					form.submit()
+			});
+	});
+</script>
+{% endblock %}

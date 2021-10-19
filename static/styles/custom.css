@@ -1,0 +1,97 @@
+.dfname {
+  padding-top:5%;
+  padding-bottom:3px;
+}
+.table {
+  font-size:20px;
+}
+a.df-link:link, a.df-link:visited {
+	margin-bottom:4px;
+	color:#09c4cd;
+}
+a.df-link:hover {
+	color:#9cd;
+}
+.btn-primary {
+	background-color:#678;
+}
+table.dataframe tr:first-child {
+	text-align:left;
+}
+.dflist {
+	margin-top:40px;
+}
+.dftable {
+	border-top:1px solid #888;
+	border-bottom:1px solid #888;
+	min-height:350px;
+}
+.dftable tr:first-child td {
+  padding-top:20px;
+}
+.dftable tr td:first-child {
+	min-width:200px;
+	font-weight:bold;
+	color:#abc;
+}
+.top-score {
+  font-weight:bold;
+	color:#4dd4fd;
+}
+.exact-match {
+  font-weight:bold;
+	color:#06df0a;
+}
+.pred {
+  font-weight:bold;
+	color:orange;
+}
+.dftable td {
+	padding:5px;
+}
+.dfitem {
+  padding:5px 15px;
+  background-color: #567; 
+  font-size:20px;
+  box-shadow: 2px 2px 6px #123;
+}
+.dfitem2 {
+  border-radius: 25px;
+  padding:30px;
+  padding-bottom:5px;
+  background-color: #567; 
+  font-size:20px;
+}
+.page-link {
+	cursor:pointer;
+}
+.input_text {
+  font-weight:500;
+  color:#acf;
+}
+.form-control {
+	background-color:#b9c0c5;
+}
+.persian {
+	text-align:right;
+  direction:rtl;
+}
+.form-select {
+	font-size:20px;
+	background-color:#446;
+	color:#999;
+}
+span.no_selection {
+    user-select: none; /* standard syntax */
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
+}
+
+.error {
+	color:#f88;
+}
+.success {
+	color:#8f8;
+}
