@@ -156,7 +156,12 @@ Persian Atomic
 														// uuuuuu
 														if (data.hasOwnProperty("items")) {
 															$.each(data.items, function(key, value){
-																	$("#" + key).html(value);
+																  if($("#" + key).length == 0) {
+																	  //it doesn't exist
+																		alert(key + " doesn't exists")
+																	} else {
+																		$("#" + key).html(value);
+																	}
 															});
                             } else {
 															dfitem.html(data);

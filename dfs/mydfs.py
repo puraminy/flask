@@ -37,6 +37,7 @@ class MyDfs():
             lines = f.readlines()
         for l in lines:
             tag, dfname = l.split("=")
+            tag = tag.replace(".", "_")
             if Path(dfname.strip()).is_file():
                 self.dflist[tag.strip()] = dfname.strip()
         self.get_files()
@@ -57,6 +58,7 @@ class MyDfs():
                 dfname = PurePath(cur_path, dirpath, filename)
                 dfname = str(dfname)
                 tag = filename
+                tag = tag.replace(".", "_")
                 print("dfname:", dfname)
                 self.dflist[tag.strip()] = dfname.strip()
 
@@ -92,6 +94,7 @@ class MyDfs():
             df = pd.read_csv(dfname, index_col=0)
         elif dfname.endswith("tsv"):
             df = pd.read_table(dfname, index_col=0)
+            print("reading df:",len(df)) 
         #df.drop(df.filter(regex="Unname"),axis=1, inplace=True)
         if index_name:
             df.columns.name = index_name
@@ -110,7 +113,7 @@ class MyDfs():
     def match(df, col1, col2):
         return df[df.apply(lambda x: x[col1] in x[col2], axis=1)]
 
-    def get_item(self, df, index=-1, match=None):
+    def get_item(self, df, index=0, match=None):
         item = None
         if index >= 0 and index < len(df):
             item = df.iloc[index]
@@ -121,8 +124,10 @@ class MyDfs():
             if matches is not None and len(matches) > 0:
                 item = matches.iloc[0]
         if item is not None:
-            input_text_fa = item.input_text_fa.replace("PersonX"," شخص الف")
-            item.input_text_fa = input_text_fa
-            item["relation"] = self.natural[item.prefix]
+            if "input_text_fa" in df:
+                input_text_fa = item.input_text_fa.replace("PersonX"," شخص الف")
+                item.input_text_fa = input_text_fa
+            if "prefix" in df:
+                item["relation"] = self.natural[item.prefix]
         return item
 

@@ -98,7 +98,7 @@ def format(item):
         pred_class="top-score"
 
     if "top" in item:
-        item["target_text"] = item["target_text"].replace(item["top"], f'<span class="{pred_class}">' + item["top"] + '</span>')
+        item["target_text"] = item["target_text"].replace(item["top"], f'<span class="{pred_class}">' + str(item["top"]) + '</span>')
     item["pred_text1"] = f'<span class="{pred_class}">' + str(item["pred_text1"]) + '</span>'
     return item
 
@@ -306,8 +306,8 @@ def index():
 
         item = myDfs.get_item(df, index=item_index)
         if item is None:
-            msg = "No item or match was found!"
-            return jsonify(message=msg), 521
+            msg = f"No item or match was found at {item_index}"
+            return jsonify(message=msg, index=item_index, total=len(df)), 521
 
         item = format(item)
 
