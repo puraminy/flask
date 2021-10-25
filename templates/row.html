@@ -42,6 +42,23 @@
           | {{ scores[key] }}
           {% endif %}
           </div>
+          {% if opts["group"] %}
+          <div class="col-auto">
+            <select name="group@{{ key }}" class="form-control" id="group" >
+              {% for g in groups[key] %}
+              <option value="{{g}}" {{ 'selected'  if g == val else ''  }}   >{{g}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-primary"  cmd="group@{{ key }}" >
+              <i class="fas fa-filter" aria-hidden="true"></i>
+            </button>
+            <button class="btn btn-primary"  cmd="chart@{{ key }}" >
+              <i class="fas fa-chart-bar"></i>
+            </button>
+          </div>
+          {% endif %}
           {% if opts["filter"] %}
           <div class="col-auto">
             <input type="text" placeholder="range ({{ ranges[key]['low'] }}-{{ ranges[key]['high'] }})" name="range@{{ key }}" class="form-control" id="filter" >
@@ -62,7 +79,7 @@
       </td>
     </tr>
     {% endif %}
-    {% if opts["filter"] %}
+    {% if opts["filter"] or opts["group"] %}
     <tr> 
       <td>
       </td>

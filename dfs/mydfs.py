@@ -25,6 +25,7 @@ class MyDfs():
                 "pred1_score":{"low":0, "high":1},
                 "back_score":{"low":0, "high":1}
         }
+        self.groups = {}
         self.dflist = {}
         self.show_list = ["input_text", "target_text", "pred_text1", "pred1_score"]
         self.match_list = ["pred_text1", "target_text"]
@@ -40,7 +41,7 @@ class MyDfs():
             tag = tag.replace(".", "_")
             if Path(dfname.strip()).is_file():
                 self.dflist[tag.strip()] = dfname.strip()
-        self.get_files()
+        #self.get_files()
         if False:
             for tag, dfname in self.dflist.items():
                 df1 = pd.read_table(dfname, index_col=0)

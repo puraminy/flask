@@ -49,8 +49,11 @@ def create_figure(chart):
     axis = fig.add_subplot(1, 1, 1)
     df = myDfs.cur["df"]
     tag = myDfs.cur["tag"]
-    df = df[[chart]]
-    ax = df.plot.hist()
+    if "group" in chart:
+        ax = df.pivot_table(index=[chart],columns=chart,aggfunc='size').plot(kind='bar')
+    else:
+        df = df[[chart]]
+        ax = df.plot.hist()
     ax.set_title(chart)
     fig = ax.get_figure()
     r = random.randint(0, 1000)
@@ -98,7 +101,7 @@ def format(item):
         pred_class="top-score"
 
     if "top" in item:
-        item["target_text"] = item["target_text"].replace(item["top"], f'<span class="{pred_class}">' + str(item["top"]) + '</span>')
+        item["target_text"] = item["target_text"].replace(str(item["top"]), f'<span class="{pred_class}">' + str(item["top"]) + '</span>')
     item["pred_text1"] = f'<span class="{pred_class}">' + str(item["pred_text1"]) + '</span>'
     return item
 
@@ -114,6 +117,8 @@ def fill_opts(item, show_all = False):
     opts = {}
     for key,val in item.items():
         opt = {"show": show_all, "title": key, "class": "", "sort":False}
+        if "group" in key:
+            opt["group"] = True
         if not key in titles:
             titles[key] = key
         if "_fa" in key:
@@ -195,13 +200,17 @@ def index():
             items=myDfs.items,
             dflist=myDfs.dflist,
         )
-    if dfname in myDfs.dfs and not cmd in ["filter"]:
+    # for filter or group commands, the data frame must reload
+    if dfname in myDfs.dfs and not cmd in ["filter", "group"]:
         df = myDfs.dfs[dfname]["df"]
         myDfs.views[orig_tag] = {"dfname":dfname}
     else:
         df = myDfs.read_df(dfname)
         myDfs.views[orig_tag] = {"dfname":dfname}
         myDfs.dfs[dfname] = {"df":df, "tag":tag, "total":len(df), "item_index":0, "report":None}
+        for col in df:
+            if "group" in col:
+              myDfs.groups[col] = df[col].unique()
         item_index = 0 
     if dfname:
         item_index = myDfs.dfs[dfname]["item_index"]
@@ -227,6 +236,12 @@ def index():
 
         if cmd == "chart":
             return cmd_target, 203
+        else:
+            myDfs.images = {}
+        if cmd == "group" or cmd_target in myDfs.groups:
+            _group = request.form.get("group@" + cmd_target, "")
+            df = df[(df[cmd_target] == _group)]
+
         if cmd == "filter" or cmd_target in myDfs.ranges.keys():
             score_range = request.form.get("range@" + cmd_target, "")
             if score_range:
@@ -234,7 +249,7 @@ def index():
                 myDfs.ranges["pred1_score"]["low"] = float(low.strip())
                 myDfs.ranges["pred1_score"]["high"] = float(high.strip())
             df = df[(df[cmd_target] <= myDfs.ranges[cmd_target]["high"]) & (df[cmd_target] >= myDfs.ranges[cmd_target]["low"])]
-        if cmd == "sort" or (cmd_target and myDfs.sort[cmd_target]):
+        if cmd == "sort" or (cmd_target in myDfs.sort and myDfs.sort[cmd_target]):
             df = df.sort_values(by=cmd_target, ascending=True)
         if cmd == "filter" or cmd == "sort":
             item_index = 0
@@ -356,6 +371,7 @@ def index():
                 images=myDfs.images,
                 scores=df_scores,
                 ranges=myDfs.ranges,
+                groups=myDfs.groups,
                 options = options,
                 is_sync = myDfs.sync,
                 show_all_records = myDfs.show_all,
