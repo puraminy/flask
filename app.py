@@ -231,7 +231,7 @@ def index():
         if not "bookmark" in df:
             df["bookmark"] = False
             myDfs.save_df(df, dfname)
-        df_folder = "/home/pouramini/dfs/" + tag.replace("@", "/")
+        df_folder = "/home/ahmad/dfs/" + tag.replace("@", "/")
         Path(df_folder).mkdir(exist_ok=True, parents=True)
 
         if cmd == "chart":

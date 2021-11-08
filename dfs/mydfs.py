@@ -23,14 +23,15 @@ class MyDfs():
         self.sync = False
         self.ranges = {
                 "pred1_score":{"low":0, "high":1},
-                "back_score":{"low":0, "high":1}
+                "back_score":{"low":0, "high":1},
+                "rouge_score":{"low":0, "high":1}
         }
         self.groups = {}
         self.dflist = {}
         self.show_list = ["input_text", "target_text", "pred_text1", "pred1_score"]
         self.match_list = ["pred_text1", "target_text"]
-        self.dflist_orig_file = "/home/pouramini/dflist"
-        self.dflist_temp_file = "/home/pouramini/dflist-temp"
+        self.dflist_orig_file = "/home/ahmad/dflist"
+        self.dflist_temp_file = "/home/ahmad/dflist-temp"
         self.src_dfname = "/drive3/pouramini/data/atomic/en_fa/xIntent_en_fa_de_train_no_dups.tsv"
         if not Path(self.dflist_temp_file).exists() or reset:
            shutil.copy(self.dflist_orig_file, self.dflist_temp_file)
@@ -41,14 +42,14 @@ class MyDfs():
             tag = tag.replace(".", "_")
             if Path(dfname.strip()).is_file():
                 self.dflist[tag.strip()] = dfname.strip()
-        #self.get_files()
+        self.get_files()
         if False:
             for tag, dfname in self.dflist.items():
                 df1 = pd.read_table(dfname, index_col=0)
                 df2 = pd.read_table(self.src_dfname, index_col=0)
                 mdf = pd.merge(df1, df2)
                 mdf.to_csv(dfname, sep="\t", index=False)
-        with open('/home/pouramini/dflist.json', 'w') as fp:
+        with open('/home/ahmad/dflist.json', 'w') as fp:
                 json.dump(self.dflist, fp)
 
 
